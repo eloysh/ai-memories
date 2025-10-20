@@ -1,0 +1,14 @@
+@"
+node_modules/
+.next/
+out/
+dist/
+.cache/
+*.log
+.env*
+!.env.local.example
+.DS_Store
+Thumbs.db
+public/works/videos/*
+public/sounds/*
+"@ | Out-File -Encoding utf8 .gitignore
