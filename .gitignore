@@ -1,4 +1,3 @@
-@"
 node_modules/
 .next/
 out/
@@ -11,4 +10,3 @@ dist/
 Thumbs.db
 public/works/videos/*
 public/sounds/*
-"@ | Out-File -Encoding utf8 .gitignore

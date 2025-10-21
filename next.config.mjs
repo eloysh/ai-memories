@@ -1,5 +1,8 @@
+// next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: { appDir: true }
+  reactStrictMode: true,
+  // Если где-то используешь <Image>, но нет внешних доменов:
+  images: { unoptimized: true },
 };
 export default nextConfig;
