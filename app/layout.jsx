@@ -1,17 +1,21 @@
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://aimemories.ru"),
   title: "AI Memories — оживляю фото в трогательное видео",
-  description: "Бесплатная пробная анимация, расчёт в WhatsApp. Подарок для родных.",
-  openGraph: { title: "AI Memories", images: ["/og.png"] },
-  icons: { icon: "/icons/icon-192.png", apple: "/icons/icon-192.png" }
+  description: "Оживлю ваши фото и соберу трогательное видео-историю. Бесплатный тест — «Оживить фото».",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "AI Memories — оживляю фото в трогательное видео",
+    description: "Оживлю ваши фото и соберу трогательное видео-историю. Бесплатный тест — «Оживить фото».",
+    url: "/",
+    siteName: "AI Memories",
+    images: [{ url: "/opengraph-image.jpg", width: 1200, height: 630 }],
+    locale: "ru_RU",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Memories — оживляю фото",
+    description: "Оживлю ваши фото и соберу трогательное видео-историю.",
+    images: ["/opengraph-image.jpg"],
+  },
 };
-import "./globals.css";
-
-export default function RootLayout({ children }){
-  return (
-    <html lang="ru">
-      <body>
-        <div id="app">{children}</div>
-      </body>
-    </html>
-  );
-}
