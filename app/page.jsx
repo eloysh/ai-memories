@@ -13,7 +13,6 @@ import WhatsAppButton from "../components/WhatsAppButton";
 
 import Stats from "../components/Stats";
 import Scenes from "../components/Scenes";
-import VideoTestimonials from "../components/VideoTestimonials";
 import Calculator from "../components/Calculator";
 import Pricing from "../components/Pricing";
 import TestimonialsText from "../components/TestimonialsText";
@@ -36,46 +35,20 @@ export default function Page() {
     return () => io.disconnect();
   }, []);
 
-  // Примеры песен (файлы в /public/songs)
+  // Демо-треки (файлы в /public/songs/)
   const tracks = [
     { title: "Ромашковая любовь", src: "/songs/song1.mp3" },
     { title: "Светлые дни", src: "/songs/song2.mp3" },
     { title: "Дорога домой", src: "/songs/song3.mp3" },
   ];
 
-  // Дополнительные карточки для витрины «Память оживает» (включая вертикальные 9:16 с видео)
-  const extraShowcaseItems = [
-    {
-      before: "/works/restore2_before.jpg",
-      after: "/works/restore2_after.jpg",
-      label: "Реставрация (доп.) · Удаление шумов/царапин",
-    },
-    {
-      before: "/works/talk_before.jpg",
-      after: "/works/talk_after.jpg",
-      afterVideo: "/works/talk_after.mp4",
-      label: "Говорит · Анимация лица (вертикально)",
-      aspectClass: "aspect-[9/16]",
-    },
-    {
-      before: "/works/sing_before.jpg",
-      after: "/works/sing_after.jpg",
-      afterVideo: "/works/sing_after.mp4",
-      label: "Поёт · Синхронизация губ (вертикально)",
-      aspectClass: "aspect-[9/16]",
-    },
-  ];
-
   return (
     <div className="relative min-h-screen">
       <BackgroundFX />
 
-      {/* Звук при входе (файл положи в /public/songs/enter.mp3) */}
+      {/* звук при входе: /public/songs/enter.mp3 */}
       {!entered && (
-        <EntryOverlay
-          audioSrc="/songs/enter.mp3"
-          onEnter={() => setEntered(true)}
-        />
+        <EntryOverlay audioSrc="/songs/enter.mp3" onEnter={() => setEntered(true)} />
       )}
 
       <section className="container py-16 space-y-16">
@@ -100,43 +73,41 @@ export default function Page() {
           />
         </div>
 
-        {/* Память оживает (карточки + добавленные вертикали) */}
-        <Showcase extraItems={extraShowcaseItems} />
+        {/* Память оживает — БЕЗ пропсов, как в актуальной версии компонента */}
+        <Showcase />
 
-        {/* Мобильная адаптация: два вертикальных ролика рядом (отзыв + пример) */}
-        <div className="reveal md:hidden" aria-hidden={false}>
-  <TwoWorksVideo />
-</div>
+        {/* Мобилка: два вертикальных ролика рядом */}
+        <div className="reveal md:hidden">
+          <TwoWorksVideo />
+        </div>
 
-{/* ПК версия: один большой вертикальный ролик 9:16 */}
-<section className="reveal hidden md:block">
-  <h2 className="text-3xl md:text-4xl font-semibold text-center mb-2">
-    Пример работы 
-  </h2>
+        {/* ПК: один большой вертикальный 9:16 ролик */}
+        <section className="reveal hidden md:block">
+          <h2 className="text-3xl md:text-4xl font-semibold text-center mb-2">
+            Пример работы
+          </h2>
 
-  {/* Центрируем и ограничиваем размеры, чтобы не «выпрыгивало» за экран */}
-  <div className="relative mx-auto aspect-[9/16] w-full max-w-[280px] max-h-[70vh] rounded-3xl overflow-hidden border border-white/10 bg-black/30">
-    <video
-      className="absolute inset-0 w-full h-full object-contain bg-black"
-      src="/works/videos/review_01.mp4"
-      poster="/works/videos/review_01_poster.jpg"
-      controls
-      playsInline
-    />
-    <div className="absolute top-3 left-3 text-xs bg-white/10 backdrop-blur px-2 py-1 rounded">
-      AI Memories
-    </div>
-  </div>
-</section>
+          {/* Вертикальный (9:16), крупный, но не «вываливается» за экран */}
+          <div className="relative mx-auto aspect-[9/16] w-full max-w-[420px] max-h-[80vh] rounded-3xl overflow-hidden border border-white/10 bg-black/30">
+            <video
+              className="absolute inset-0 w-full h-full object-contain bg-black"
+              src="/works/videos/review_01.mp4"
+              poster="/works/videos/review_01_poster.jpg"
+              controls
+              playsInline
+            />
+            <div className="absolute top-3 left-3 text-xs bg-white/10 backdrop-blur px-2 py-1 rounded">
+              AI Memories
+            </div>
+          </div>
+        </section>
 
-
-        {/* Блок с песнями (демо-треки) */}
+        {/* Песни (демо) */}
         <Songs tracks={tracks} />
 
-        {/* Остальные секции (как у тебя были) */}
+        {/* Остальные блоки */}
         <Stats />
         <Scenes />
-        <VideoTestimonials />
         <Calculator />
         <Pricing />
         <TestimonialsText />

@@ -1,7 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-/* Фолбэк для картинок */
+/* Лёгкий плейсхолдер */
+function Skeleton() {
+  return (
+    <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-slate-200 to-slate-100" />
+  );
+}
+
+/* Картинка с фолбэком + ленивой загрузкой */
 function ImgFallback({ src, alt, fallback, className }) {
   const [s, setS] = useState(src);
   return (
@@ -9,13 +16,15 @@ function ImgFallback({ src, alt, fallback, className }) {
       src={s}
       alt={alt}
       className={className}
+      loading="lazy"
+      decoding="async"
       onError={() => fallback && setS(fallback)}
       draggable={false}
     />
   );
 }
 
-/* Рамка с фиксированным соотношением сторон (надёжно на мобилках) */
+/* Рамка с фиксированным соотношением (надёжно на мобилках) */
 function Frame({ ratio = "1:1", className = "", children, boxRef }) {
   let pt = 100; // 1:1
   try {
@@ -34,14 +43,16 @@ function Slider({
   before,
   after,
   afterVideo = null,
+  afterPoster = null,       // ← добавили постер
   label,
   fbBefore,
   fbAfter,
-  ratio = "1:1", // "1:1" | "9:16"
+  ratio = "1:1",            // "1:1" | "9:16"
 }) {
   const [x, setX] = useState(50);
   const [videoError, setVideoError] = useState(false);
   const [muted, setMuted] = useState(true); // автоплей возможен только с muted
+  const [inView, setInView] = useState(false);
   const videoRef = useRef(null);
   const boxRef = useRef(null);
 
@@ -87,6 +98,18 @@ function Slider({
     };
   }, []);
 
+  // Ленивая инициализация видео только когда карточка видна
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => setInView(e.isIntersecting),
+      { rootMargin: "200px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   // Переключение звука
   const toggleMute = async (e) => {
     e.stopPropagation();
@@ -98,11 +121,10 @@ function Slider({
       if (v.paused) await v.play().catch(() => {});
     } catch {}
   };
-
   const stop = (e) => e.stopPropagation();
 
   return (
-    <div className="relative group rounded-3xl overflow-hidden border border-slate-200 bg-white select-none">
+    <div className="relative group rounded-3xl overflow-hidden border border-slate-200/80 bg-white/80 backdrop-blur select-none">
       <Frame ratio={ratio} boxRef={boxRef}>
         {/* BEFORE */}
         <ImgFallback
@@ -115,17 +137,23 @@ function Slider({
         {/* AFTER */}
         <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - x}% 0 0)` }}>
           {afterVideo && !videoError ? (
-            <video
-              ref={videoRef}
-              className="w-full h-full object-cover object-center"
-              src={afterVideo}
-              autoPlay
-              loop
-              muted={muted}
-              playsInline
-              preload="metadata"
-              onError={() => setVideoError(true)}
-            />
+            <>
+              {!inView && <Skeleton />}
+              {inView && (
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover object-center"
+                  src={afterVideo}
+                  poster={afterPoster || "/video-poster-fallback.jpg"}
+                  autoPlay
+                  loop
+                  muted={muted}
+                  playsInline
+                  preload="none"           // ← экономим трафик
+                  onError={() => setVideoError(true)}
+                />
+              )}
+            </>
           ) : (
             <ImgFallback
               src={after}
@@ -149,7 +177,7 @@ function Slider({
           </button>
         )}
 
-        {/* Вертикальная линия разделения */}
+        {/* Линия разделения */}
         <div
           className="absolute top-0 bottom-0 w-px bg-white/80 shadow"
           style={{ left: `${x}%`, transform: "translateX(-0.5px)" }}
@@ -163,7 +191,7 @@ function Slider({
           </div>
         </div>
 
-        {/* Ползунок — чуть выше, чтобы не перекрывался подписью снизу */}
+        {/* Ползунок */}
         <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-2/3">
           <input
             aria-label="Слайдер сравнения"
@@ -176,9 +204,9 @@ function Slider({
           />
         </div>
 
-        {/* ПОДПИСЬ: только снизу, белая полупрозрачная плашка */}
+        {/* Подпись: одна — снизу, читаемая на белой полупрозрачной плашке */}
         <div className="absolute inset-x-1 bottom-1 pointer-events-none">
-          <div className="mx-auto w-full rounded-xl bg-white/15 text-slate-900 backdrop-blur-sm border border-white/20 shadow px-1 py-1">
+          <div className="mx-auto w-full rounded-xl bg-white/80 text-slate-900 backdrop-blur-sm border border-white/30 shadow px-1 py-1">
             <span className="block text-center text-[10px] sm:text-sm font-medium leading-tight">
               {label}
             </span>
@@ -200,10 +228,22 @@ export default function Showcase() {
     { before: "/works/011_before.jpg", after: "/works/011_after.jpg", label: "Реставрация снимка · Удаление царапин и артефактов" },
   ];
 
-  // Вертикальные 9:16 с видео «после»
+  // Вертикальные 9:16 (всегда с постером!)
   const vertical = [
-    { before: "/works/talk_before.jpg", after: "/works/talk_after.jpg", afterVideo: "/works/talk_after.mp4", label: "Говорит · Анимация лица" },
-    { before: "/works/06_before.jpg",   after: "/works/06_after.jpg",   afterVideo: "/works/06_after.mp4",   label: "Поёт · Синхронизация губ" },
+    {
+      before: "/works/talk_before.jpg",
+      after:  "/works/talk_after.jpg",
+      afterVideo:  "/works/talk_after.mp4",
+      afterPoster: "/works/talk_after_poster.jpg",
+      label: "Говорит · Анимация лица",
+    },
+    {
+      before: "/works/06_before.jpg",
+      after:  "/works/06_after.jpg",
+      afterVideo:  "/works/06_after.mp4",
+      afterPoster: "/works/06_after_poster.jpg",
+      label: "Поёт · Синхронизация губ",
+    },
   ];
 
   return (
@@ -211,14 +251,10 @@ export default function Showcase() {
       <h2 className="text-3xl md:text-4xl font-semibold text-center mb-2">Память оживает</h2>
       <p className="text-center text-slate-600 mb-6">Подборка готовых работ — тоже в формате До/После.</p>
 
-      {/* Мобилка: 2 колонки; ПК: 2 колонки */}
+      {/* Мобилка: 2 колонки; ПК: 2 колонки — компактно и быстро */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
-        {items.map((it, i) => (
-          <Slider key={`i${i}`} {...it} ratio="1:1" />
-        ))}
-        {vertical.map((it, i) => (
-          <Slider key={`v${i}`} {...it} ratio="9:16" />
-        ))}
+        {items.map((it, i) => <Slider key={`i${i}`} {...it} ratio="1:1" />)}
+        {vertical.map((it, i) => <Slider key={`v${i}`} {...it} ratio="9:16" />)}
       </div>
     </section>
   );
