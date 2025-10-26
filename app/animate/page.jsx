@@ -17,3 +17,41 @@ export default function AnimatePage() {
     </section>
   );
 }
+import SEOJsonLd from "../components/SEOJsonLd";
+
+const org = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "AI Memories",
+  "url": "https://aimemories.ru",
+  "logo": "https://aimemories.ru/opengraph-image.jpg",
+  "sameAs": [
+    "https://t.me/...",       // добавь, если есть
+    "https://vk.com/...",     // соцсети помогут по брендовому запросу
+    "https://www.youtube.com/@..." 
+  ]
+};
+
+const webSite = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "AI Memories",
+  "url": "https://aimemories.ru",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://aimemories.ru/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+};
+
+export default function Page() {
+  // ...
+  return (
+    <div className="relative min-h-screen">
+      {/* ... */}
+      <SEOJsonLd data={org} />
+      <SEOJsonLd data={webSite} />
+      {/* ... */}
+    </div>
+  );
+}
