@@ -2,6 +2,7 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
+import SEOJsonLd from "../components/SEOJsonLd";  // ← добавили
 
 import BackgroundFX from "../components/BackgroundFX";
 import EntryOverlay from "../components/EntryOverlay";
@@ -41,6 +42,31 @@ export default function Page() {
     { title: "Светлые дни", src: "/songs/song2.mp3" },
     { title: "Дорога домой", src: "/songs/song3.mp3" },
   ];
+const videoLd = {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Оживление фото — пример работы",
+    "description": "Показываю, как статичное фото превращаю в эмоциональный ролик 9:16.",
+    "thumbnailUrl": ["https://aimemories.ru/works/videos/review_01_poster.jpg"],
+    "uploadDate": "2025-10-20T00:00:00+03:00",
+    "contentUrl": "https://aimemories.ru/works/videos/review_01.mp4",
+    "embedUrl": "https://aimemories.ru/",
+    "duration": "PT30S",
+    "publisher": {
+      "@type": "Organization",
+      "name": "AI Memories",
+      "logo": { "@type": "ImageObject", "url": "https://aimemories.ru/opengraph-image.jpg" }
+    }
+  };
+
+  return (
+    <div className="relative min-h-screen">
+      {/* ...весь твой JSX выше/ниже */}
+
+      {/* В любом месте внутри <body>, лучше рядом с блоком видео: */}
+      <SEOJsonLd data={videoLd} />
+    </div>
+  );
 
   return (
     <div className="relative min-h-screen">
