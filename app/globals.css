@@ -1,6 +1,31 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ===== Безопасная анимация появления ===== */
+/* По умолчанию всё видно (важно для Vercel/SSR) */
+.reveal{ opacity:1; transform:none }
+
+/* Если JS включён – добавим класс .js на <html> и анимируем красиво */
+html.js .reveal{
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity .5s ease, transform .5s ease;
+}
+html.js .reveal.show{
+  opacity:1;
+  transform:none;
+}
+
+/* Кнопка-«призрак» */
+.btn-ghost{
+  @apply inline-flex items-center justify-center rounded-xl border border-slate-300/60
+         bg-white/70 px-4 py-2 text-slate-700 hover:bg-white shadow-sm;
+}
+
+/* Контейнер */
+.container{ @apply mx-auto max-w-6xl px-4; }
 
 :root {
   --bg-from: #e9f4ff;
