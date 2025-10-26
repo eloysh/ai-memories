@@ -18,7 +18,7 @@ function VideoCard({ title, src, poster, quote, name }) {
           onError={() => setError(true)}
         >
           {src && <source src={src} type="video/mp4" />}
-          {/* Фолбэк на случай, если вашего файла пока нет */}
+          {/* Фолбэк, если файла нет */}
           <source src="/demo_after_video.mp4" type="video/mp4" />
         </video>
 
@@ -29,7 +29,7 @@ function VideoCard({ title, src, poster, quote, name }) {
           </span>
         </div>
 
-        {/* Плашка об ошибке пути */}
+        {/* Сообщение об ошибке пути */}
         {error && (
           <div className="absolute inset-0 grid place-items-center bg-black/30">
             <div className="rounded-xl bg-white/95 px-3 py-2 text-sm text-slate-800 shadow">
@@ -55,25 +55,25 @@ function VideoCard({ title, src, poster, quote, name }) {
 }
 
 export default function VideoTestimonials() {
-  // Положите файлы сюда: /public/works/videos/ (портрет 1080×1920)
+  // Файлы: /public/works/videos/ (портрет 1080×1920)
   const review = {
     title: "Пример работы",
     src: "/works/videos/review_01.mp4",
     poster: "/works/videos/review_01_poster.jpg",
-    
   };
 
   const sample = {
-    title: "Видео-отзыв песня на заказ",
+    title: "Видео-отзыв · песня на заказ",
     src: "/works/videos/full_01.mp4",
     poster: "/works/videos/full_01_poster.jpg",
     name: "Светлана",
     quote:
-      "Получилось очень трогательно! Мама расплакалась, когда увидела, как фото оживают. И папа очень растрогался когда услышал их песню по их истории."
+      "Получилось очень трогательно! Мама расплакалась, когда увидела, как фото оживают. И папа очень растрогался, когда услышал их песню по их истории.",
   };
 
   return (
-    <section id="video-testimonials" className="reveal">
+    // ВАЖНО: скрыто на мобилке, видно только на >= md
+    <section id="video-testimonials" className="reveal hidden md:block">
       <h2 className="text-3xl md:text-4xl font-semibold text-center mb-2 text-slate-900">
         Видео-отзыв и пример работы
       </h2>
@@ -81,7 +81,7 @@ export default function VideoTestimonials() {
         Вертикальный формат 9:16 — идеально для сторис и телефонов.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6 max-w-5xl mx-auto">
         <VideoCard {...review} />
         <VideoCard {...sample} />
       </div>
